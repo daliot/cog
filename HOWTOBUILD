@@ -63,6 +63,7 @@ Pick or edit the configuration you want, then evaluate it.
     - OSX:
 
             # as of 10.7 llvm is the default but incompatible compiler
+            # under 10.8 the following statement is not needed.
             export CC='/usr/bin/gcc-4.2'
             export MACOSX_DEPLOYMENT_TARGET=10.5
             sh ../codegen-scripts/extract-commit-info.sh
