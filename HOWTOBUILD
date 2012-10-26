@@ -3,29 +3,74 @@ REQUIREMENTS
 
 The build relies on a valid gcc, cmake and 32 bit headers installation:
 
-- Unix:
-	sudo apt-get install gcc g++ cmake lib32x-dev
+Unix:
+-----
+	sudo apt-get install gcc g++ cmake lib32x-dev git
 
-- Mac:
-  Download and install the latest version of XCode and XCode command line tools
+Mac:
+----
+- Download and install the latest version of [XCode](http://developer.apple.com/downloads)
+- Additionally install the [XCode Command Line Tools](http://developer.apple.com/downloads)
+- Make sure you have `wget` installed. We recommend using [hombrew](http://mxcl.github.com/homebrew/)
+        ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
+        brew install wget
 
-- Win:
-  For building the VM under windos you will have to install a minggw
-  environment
+Win:
+----
+For building the VM under windows you will have to install a minggw environment.
 
-BUILDING FROM JENKINS SOURCES
-=============================
+- Install MinGW and MSYS, with C/C++ compiler support: http://www.mingw.org/wiki/msys. 
+    To install mingw+msys using a single, painless step, one should download latest installer from 
+    [here](http://sourceforge.net/projects/mingw/files/Automated%20MinGW%20Installer/mingw-get-inst/)
+    
+    Install all packages (also MinGW-dev) for maximum compatibility
+    
+    Make sure you have MinGW (usually `C:\MinGW\msys\1.0\bin`) in the Path environment variable.
 
-If you downloaded the complete sources from the hudson(or jenkins) server use cmake 
-to build the VM.
+- Install the additional MinGW packages by running the following actions in `cmd`:
+    
+        mingw-get install msys-unzip msys-wget msys-zip
 
-    cd build
-    cmake .
-    make
+- Install [Msys-Git](http://code.google.com/p/msysgit/). 
+  During the installation, choose the option “run git from from the windows command prompt”.
+    
+  Optional: add git to the PATH variable so that you can see git from msys. 
+  To do this, add path to git for msys: 
+        
+  Control panel -> System -> System Properties / Advanced  [ Environment Variables ].
 
-**DO NOT USE** scripts in unixbuild or macbuild or cygwinbuild to build VMs.
-There is no any guarantees that they are working for sources taken from git
-repositories!
+  There should be already: `C:\Program Files\Git\cmd`. 
+  Add `C:\Program Files\Git\bin`. 
+  Notice that the path may not be exactly `C:\Program Files\Git` but similar…
+
+- Install [CMake](http://www.cmake.org/cmake/resources/software.html)
+  During installation, in install options , make sure that you choose to add CMake to the
+  `Path` Environment variable.
+
+- To ensure proper compilation you have to add the following changes
+        #ifndef _MINGW_FLOAT_H_
+        #include_next <float.h>
+        #endif
+  in `C:\MinGW\lib\gcc\mingw\32\4.6.1\include\float.h`. Note that the version number, 
+  in this case 4.6.1, might be different in your case.
+
+THE SOURCES
+===========
+
+Part of the source code lives in our [gitorious repository](https://gitorious.org/cogvm/blessed).
+You can clone them with the following command:
+    
+        git clone --depth=0 git://gitorious.org/cogvm/blessed.git cog-build-dir
+        cd cog-build-dir
+
+The other part of the source code is the Smalltalk code for the VMMaker which will
+generate additional C sources. You can obtain it by creating a new version
+of the vm builder script.
+    
+        cd image && ./newImage.sh
+
+Note that you will need a valid Pharo/Squeak VM/Cog to create and run the image.
+The latest version of the VMs are available [here](http://pharo.gforge.inria.fr/ci/vm/).
 
 
 (RE)CREATING THE GENERATED VM SOURCES
@@ -56,9 +101,7 @@ Pick or edit the configuration you want, then evaluate it.
 
             # using Unix Makefiles
             cd build
-            sh ../codegen-scripts/extract-commit-info.sh
-            cmake .             # this is the same as cmake -G "Unix Makefiles"
-            make
+            ./build.sh
 
     - OSX:
 
@@ -66,10 +109,8 @@ Pick or edit the configuration you want, then evaluate it.
             # under 10.8 the following statement is not needed.
             export CC='/usr/bin/gcc-4.2'
             export MACOSX_DEPLOYMENT_TARGET=10.5
-            sh ../codegen-scripts/extract-commit-info.sh
             cd build
-            cmake .
-            make
+            ./build.sh
 
     - Varia: consult the last section from `cmake --help` to check for other
     generators.  
@@ -80,12 +121,8 @@ Pick or edit the configuration you want, then evaluate it.
             rm -f CMakeCache.txt   # remove existing cache to avoid issues
             export CC='gcc-4.2';   # make sure we don't use llvm
             cmake -G "Xcode"
-            open CogVM.xcodeproj
+            open *.xcodeproj       #
 
 
 4. Finally, run the freshly compiled VM from `results`.
-
-
-See a complete guide on how to build Cog VM using cmake on:
-http://code.google.com/p/cog/wiki/Guide
 
