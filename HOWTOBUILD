@@ -12,7 +12,7 @@ Mac:
 - Download and install the latest version of [XCode](http://developer.apple.com/downloads)
 - Additionally install the [XCode Command Line Tools](http://developer.apple.com/downloads)
 - Make sure you have `wget`, `cmake` and `git` installed. 
-We recommend using [hombrew](http://mxcl.github.com/homebrew/)
+  We recommend using [hombrew](http://mxcl.github.com/homebrew/)
         ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
         brew install wget cmake git
 
@@ -113,7 +113,7 @@ Pick or edit the configuration you want, then evaluate it.
     - OSX:
 
             # as of 10.7 llvm is the default but incompatible compiler
-            # under 10.8 the following statement is not needed.
+            # however under 10.8 the following statement is not needed.
             export CC='/usr/bin/gcc-4.2'
             export MACOSX_DEPLOYMENT_TARGET=10.5
             cd build
